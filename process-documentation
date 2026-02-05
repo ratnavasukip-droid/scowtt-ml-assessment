@@ -1,0 +1,32 @@
+Process Documentation: Rationale for Method Choices
+
+
+1. Strategy: The "Healthy Window" Selection
+Observation: The Olist dataset shows inconsistent availability. The end of 2018 shows a sharp drop-off in data quality/availability. Rationale: Rather than using all data (including noisy/incomplete periods), we prioritized Data Stability. Choice: We selected June 2018 as our specific prediction target window.
+
+Why June 2018? It represents a "mature" period in the dataset with consistent order volume (>5,000 orders/month) and sufficient historical depth (Sept 2016 - May 2018) for feature engineering.
+Trade-off: We sacrificed the breadth of multiple windows for the depth and cleanliness of a single, well-defined time split.
+2. Data Cleaning & Preparation
+The "Customer" Identity
+Problem: customer_id changes with every order.
+Solution: We aggregated everything to customer_unique_id. This creates a true "Single User View", ensuring our model predicts user behavior, not transaction attributes.
+Missing Values
+Reviews: Null reviews were imputed with 3.0 (Neutral). A missing review is often "No news is good news" (or at least not actively bad), so filtering them out would lose data.
+Order Value: We combined price + freight to get total_order_value. This is the true conversion value from a business perspective.
+3. Feature Engineering Choices
+We focused on RFM (Recency, Frequency, Monetary) as the core predictor set, plus behavioral context.
+
+Recency (days_since_last): The strongest predictor in retail. Users who bought recently are most statistically likely to buy again.
+Tenure (tenure_days): Tells us "how long has this user been with us?". High tenure + Low Recency = Loyal User.
+Engagement Proxy (avg_review): Included to test if "Happy users buy more".
+Payment Preference: We calculated the mode of payment type. Users relying on installments might behave differently than those paying full cash/credit.
+4. Modeling Approach
+Handling Class Imbalance
+Challenge: Identifying repeat buyers is searching for a needle in a haystack. Solution 1: Class Weights: We initialized models with class_weight='balanced' to heavily penalize missing a conversion. Solution 2: SMOTE: We implemented Synthetic Minority Over-sampling Technique (SMOTE) to synthetically generate new examples of "Converters" in the training set, helping the Random Forest see the decision boundary more clearly.
+
+Model Selection
+We tested three architectures:
+
+Logistic Regression: As a linear baseline.
+Random Forest: For capturing non-linear interactions (e.g., High Spend is good, but High Spend + Low Review might be bad).
+Gradient Boosting: For high-precision tuning. Winner: Random Forest (with SMOTE) typically offered the most robust generalization (AUC) without overfitting to noise.
