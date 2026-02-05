@@ -1,5 +1,5 @@
 # scowtt-ml-assessment
-## Olist ML Engineer Assessment
+## ML Engineer Assessment
 
 ### Project Overview
 This project focuses on identifying high-value customers from the Olist E-Commerce dataset. The primary objective was to build a machine learning pipeline capable of predicting which customers are likely to make a repeat purchase in the near future. This helps in targeting marketing efforts towards users with the highest propensity to convert.
@@ -29,6 +29,6 @@ My final model achieved an **AUC of 0.71**. In practical business terms, the top
 To reproduce the analysis:
 1.  Ensure you have the Olist dataset CSV files in a `datasets/` folder.
 2.  Install the required packages: `pandas`, `scikit-learn`, `imbalanced-learn`, `matplotlib`, `seaborn`.
-3.  Run the main script: `python optimized-option1-submission.py`
+3.  Run the ipynb script: `scowtt-ml-assessment.ipynb`
 
 This will generate the user rankings in `user_propensity_scores.csv` and performance plots in `model_plots.png`.
